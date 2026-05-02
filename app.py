@@ -997,6 +997,26 @@ USER_DB  = "data/users.json"
 
 st.set_page_config(page_title="Movie Recommender", page_icon="🎬", layout="wide")
 
+
+
+# =============================
+# WAKE UP RENDER BACKEND
+# =============================
+def wake_up_backend():
+    try:
+        with st.spinner("⏳ Starting server... please wait 30 seconds..."):
+            r = requests.get(f"{API_BASE}/", timeout=120)
+            if r.status_code == 200:
+                return True
+    except:
+        pass
+    return False
+
+# Call this before showing main app
+if "backend_ready" not in st.session_state:
+    st.session_state.backend_ready = wake_up_backend()
+
+    
 # =============================
 # STYLES
 # =============================
@@ -1151,7 +1171,7 @@ def goto_details(tmdb_id: int):
 @st.cache_data(ttl=30)
 def api_get_json(path: str, params: dict | None = None):
     try:
-        r = requests.get(f"{API_BASE}{path}", params=params, timeout=60)
+        r = requests.get(f"{API_BASE}{path}", params=params, timeout=120)  # ← change 60 to 120
         if r.status_code >= 400:
             return None, f"HTTP {r.status_code}: {r.text[:300]}"
         return r.json(), None
