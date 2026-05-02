@@ -1111,7 +1111,7 @@ Conversation so far:
     prompt += f"User: {user_message}\nCineBot:"
 
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model="gemini-1.5-flash-8b",  # ← highest free quota
         contents=prompt
     )
     return response.text
