@@ -1086,23 +1086,17 @@ def verify_password(password, hashed):
 # CHATBOT HELPER  ✅ FIXED - clean single version
 # =============================
 def get_chatbot_response(conversation_history, user_message):
-    # ✅ Client created INSIDE function — safe, no startup crash
+    from google import genai
+
     client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
 
-    # Build full prompt with conversation history
+    # Build prompt with history
     prompt = """You are CineBot 🎬, an expert AI movie assistant.
-You help users with:
-- Movie recommendations based on mood, genre, or preferences
-- Information about any movie (plot, cast, director, year)
-- Comparing movies and finding similar ones
-- Suggesting movies by language (Hindi, English, Tamil, etc.)
-- Bollywood, Hollywood, and world cinema
+Help with movie recommendations, plots, cast info, and cinema trivia.
+Keep responses friendly, short and fun. Use emojis occasionally.
+If asked something unrelated to movies, redirect to movies.
 
-Keep responses friendly, short, and engaging.
-Use emojis occasionally to keep it fun.
-If asked something unrelated to movies, politely redirect to movies.
-
-Conversation so far:
+Conversation:
 """
     for msg in conversation_history:
         role = "User" if msg["role"] == "user" else "CineBot"
@@ -1111,7 +1105,7 @@ Conversation so far:
     prompt += f"User: {user_message}\nCineBot:"
 
     response = client.models.generate_content(
-        model="gemini-1.5-flash-latest",  # ← highest free quota
+        model="gemini-2.0-flash",
         contents=prompt
     )
     return response.text
